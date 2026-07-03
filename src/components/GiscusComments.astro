@@ -1,0 +1,91 @@
+---
+// GiscusComments.astro — Giscus 评论系统
+// 需要在 Giscus 配置中设置好 repo 和 repo-id 等参数后替换下面占位符
+---
+
+<div class="comments">
+  <h2 class="comments-title">评论</h2>
+  <p class="comments-hint">
+    评论使用
+    <a href="https://giscus.app" target="_blank" rel="noopener">Giscus</a
+    >，请先登录
+    <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+    账号。
+  </p>
+  <div class="giscus"></div>
+</div>
+
+<style>
+  .comments {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .comments-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .comments-hint {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 1rem;
+  }
+</style>
+
+<script is:inline>
+  // Giscus 配置 — 部署时替换为实际的 repo 信息
+  // 1. 访问 https://giscus.app 生成配置
+  // 2. 替换下面的 data-repo 和 data-repo-id、data-category、data-category-id
+  const giscusConfig = {
+    "data-repo": "chanbao43/chanbao43.github.io",
+    "data-repo-id": "R_kgDO_YOUR_REPO_ID",
+    "data-category": "Comments",
+    "data-category-id": "DIC_kwDO_YOUR_CATEGORY_ID",
+    "data-mapping": "pathname",
+    "data-strict": "0",
+    "data-reactions-enabled": "1",
+    "data-emit-metadata": "0",
+    "data-input-position": "bottom",
+    "data-lang": "zh-CN",
+    crossorigin: "anonymous",
+    "data-loading": "lazy",
+  };
+
+  function loadGiscus() {
+    const container = document.querySelector(".giscus");
+    if (!container || container.hasChildNodes()) return;
+
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    Object.entries(giscusConfig).forEach(([key, value]) => {
+      script.setAttribute(key, String(value));
+    });
+
+    // 跟随当前主题
+    const theme =
+      document.documentElement.getAttribute("data-theme") === "dark"
+        ? "dark"
+        : "light";
+    script.setAttribute("data-theme", theme);
+
+    container.appendChild(script);
+  }
+
+  // 延迟加载评论（用户滚动到评论区时加载）
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          loadGiscus();
+          observer.disconnect();
+        }
+      });
+    },
+    { rootMargin: "200px" }
+  );
+
+  const target = document.querySelector(".comments");
+  if (target) observer.observe(target);
+</script>

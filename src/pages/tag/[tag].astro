@@ -1,0 +1,64 @@
+---
+// [tag].astro — 标签页，展示该标签下所有文章
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import PostCard from "../../components/PostCard.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  const tagSet = new Set<string>();
+  posts.forEach((p) => p.data.tags.forEach((t) => tagSet.add(t)));
+  return [...tagSet].map((tag) => ({ params: { tag } }));
+}
+
+const { tag } = Astro.params;
+const tagDecoded = decodeURIComponent(tag!);
+
+const posts = (await getCollection("blog", ({ data }) =>
+  !data.draft && data.tags.includes(tagDecoded)
+)).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<Layout
+  title={`标签：#${tagDecoded}`}
+  description={`标记为 ${tagDecoded} 的所有文章`}
+>
+  <h1 class="page-title">标签：<span class="tag-hash">#</span>{tagDecoded}</h1>
+  <p class="page-count">共 {posts.length} 篇文章</p>
+
+  {posts.length === 0 ? (
+    <p class="empty-text">暂无文章</p>
+  ) : (
+    <div class="post-list">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  )}
+</Layout>
+
+<style>
+  .page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .tag-hash {
+    color: var(--color-accent);
+  }
+
+  .page-count {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .empty-text {
+    text-align: center;
+    color: var(--color-text-secondary);
+    padding: 3rem 0;
+  }
+
+  .post-list {
+    margin-top: 0.5rem;
+  }
+</style>

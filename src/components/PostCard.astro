@@ -1,0 +1,103 @@
+---
+// PostCard.astro — 文章卡片，用于列表页展示
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  post: CollectionEntry<"blog">;
+}
+
+const { post } = Astro.props;
+const { id } = post;
+const { title, date, description, category, tags } = post.data;
+
+const categoryLabel: Record<string, string> = {
+  tech: "技术",
+  life: "生活",
+  essay: "随笔",
+};
+---
+
+<article class="post-card">
+  <div class="card-meta">
+    <span class="card-category">{categoryLabel[category]}</span>
+    <time class="card-date" datetime={date.toISOString()}>
+      {date.toLocaleDateString("zh-cn", { year: "numeric", month: "long", day: "numeric" })}
+    </time>
+  </div>
+  <h2 class="card-title">
+    <a href={`/posts/${id}/`}>{title}</a>
+  </h2>
+  <p class="card-desc">{description}</p>
+  <div class="card-tags">
+    {tags.map((tag) => <a href={`/tag/${tag}/`} class="tag">#{tag}</a>)}
+  </div>
+</article>
+
+<style>
+  .post-card {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .post-card:first-child {
+    padding-top: 0;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-category {
+    background: var(--color-accent);
+    color: #ffffff;
+    padding: 0.1em 0.55em;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .card-date {
+    color: var(--color-text-secondary);
+  }
+
+  .card-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.35rem;
+    line-height: 1.4;
+  }
+
+  .card-title a {
+    color: var(--color-text);
+  }
+
+  .card-title a:hover {
+    color: var(--color-accent);
+  }
+
+  .card-desc {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    font-size: 0.82rem;
+    color: var(--color-text-secondary);
+    transition: color var(--transition);
+  }
+
+  .tag:hover {
+    color: var(--color-accent);
+  }
+</style>

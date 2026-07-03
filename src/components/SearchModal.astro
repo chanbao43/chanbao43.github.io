@@ -1,0 +1,188 @@
+---
+// SearchModal.astro — 搜索弹窗（Pagefind UI）
+---
+
+<div id="search-modal" class="search-modal" aria-hidden="true" role="dialog" aria-label="搜索">
+  <div class="search-backdrop"></div>
+  <div class="search-dialog">
+    <header class="search-header">
+      <div class="search-input-wrap">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input
+          id="search-input"
+          class="search-input"
+          type="search"
+          placeholder="搜索文章…"
+          autocomplete="off"
+        />
+      </div>
+      <button class="search-close" aria-label="关闭搜索">✕</button>
+    </header>
+    <div id="search-results" class="search-results"></div>
+    <footer class="search-footer">
+      <kbd>↑</kbd> <kbd>↓</kbd> 导航 · <kbd>Enter</kbd> 打开 · <kbd>Esc</kbd> 关闭
+    </footer>
+  </div>
+</div>
+
+<style>
+  .search-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+  }
+
+  .search-modal.open {
+    display: block;
+  }
+
+  .search-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+  }
+
+  .search-dialog {
+    position: relative;
+    max-width: 600px;
+    margin: 15vh auto 0;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .search-header {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    gap: 0.5rem;
+  }
+
+  .search-input-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .search-icon {
+    font-size: 0.9rem;
+  }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    background: none;
+    font-size: 1rem;
+    color: var(--color-text);
+    outline: none;
+    font-family: inherit;
+  }
+
+  .search-close {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    padding: 0.25em;
+    line-height: 1;
+  }
+
+  .search-close:hover {
+    color: var(--color-text);
+  }
+
+  .search-results {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+    max-height: 50vh;
+  }
+
+  .search-results :global(.pagefind-ui__result) {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .search-results :global(.pagefind-ui__result:last-child) {
+    border-bottom: none;
+  }
+
+  .search-results :global(.pagefind-ui__result-link) {
+    font-weight: 600;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .search-results :global(.pagefind-ui__result-link:hover) {
+    color: var(--color-accent);
+  }
+
+  .search-results :global(.pagefind-ui__result-excerpt) {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-top: 0.25em;
+  }
+
+  .search-footer {
+    padding: 0.5rem 1rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    display: flex;
+    gap: 0.15rem;
+    align-items: center;
+  }
+
+  .search-footer kbd {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 0.05em 0.35em;
+    font-size: 0.75em;
+    font-family: inherit;
+  }
+</style>
+
+<script>
+  // 搜索弹窗逻辑
+  // Pagefind 需要在构建后运行: npx pagefind --site dist
+  const modal = document.getElementById("search-modal");
+  const input = document.getElementById("search-input") as HTMLInputElement;
+  const backdrop = modal?.querySelector(".search-backdrop");
+  const closeBtn = modal?.querySelector(".search-close");
+
+  function openSearch() {
+    modal?.classList.add("open");
+    modal?.setAttribute("aria-hidden", "false");
+    setTimeout(() => input?.focus(), 100);
+  }
+
+  function closeSearch() {
+    modal?.classList.remove("open");
+    modal?.setAttribute("aria-hidden", "true");
+    if (input) input.value = "";
+  }
+
+  // 从 Header 中的搜索按钮触发
+  document.getElementById("search-trigger")?.addEventListener("click", openSearch);
+  backdrop?.addEventListener("click", closeSearch);
+  closeBtn?.addEventListener("click", closeSearch);
+
+  // 键盘快捷键
+  document.addEventListener("keydown", (e) => {
+    // ⌘K / Ctrl+K 打开搜索
+    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      openSearch();
+    }
+  });
+</script>

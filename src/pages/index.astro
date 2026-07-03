@@ -1,0 +1,103 @@
+---
+// index.astro — 博客首页（文章列表 + 分页）
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import PostCard from "../components/PostCard.astro";
+import { SITE } from "../config";
+
+const allPosts = await getCollection("blog", ({ data }) => !data.draft);
+// 按日期倒序
+allPosts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const pageSize = SITE.postsPerPage;
+const totalPages = Math.ceil(allPosts.length / pageSize);
+
+// Astro 暂不在此处支持动态分页（需 getStaticPaths），首页显示第 1 页
+const currentPage = 1;
+const posts = allPosts.slice(0, pageSize);
+---
+
+<Layout title="首页" description={SITE.description} currentPath="/">
+  <section class="hero">
+    <h1 class="hero-title">{SITE.title}</h1>
+    <p class="hero-desc">{SITE.description}</p>
+  </section>
+
+  <section class="post-list">
+    {posts.length === 0 ? (
+      <p class="empty-text">暂无文章</p>
+    ) : (
+      posts.map((post) => <PostCard post={post} />)
+    )}
+  </section>
+
+  {totalPages > 1 && (
+    <nav class="pagination" aria-label="分页导航">
+      {currentPage > 1 && <a href={`/page/${currentPage - 1}/`}>← 上一页</a>}
+      <span class="page-info">{currentPage} / {totalPages}</span>
+      {currentPage < totalPages && <a href={`/page/${currentPage + 1}/`}>下一页 →</a>}
+    </nav>
+  )}
+</Layout>
+
+<style>
+  .hero {
+    text-align: center;
+    padding: 3rem 0 2rem;
+  }
+
+  .hero-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-desc {
+    color: var(--color-text-secondary);
+    font-size: 1.1rem;
+  }
+
+  .post-list {
+    margin-top: 1rem;
+  }
+
+  .empty-text {
+    text-align: center;
+    color: var(--color-text-secondary);
+    padding: 3rem 0;
+    font-size: 1.1rem;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 0 1rem;
+  }
+
+  .pagination a {
+    padding: 0.35em 0.85em;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    transition: all var(--transition);
+  }
+
+  .pagination a:hover {
+    border-color: var(--color-accent);
+    background: var(--color-bg-secondary);
+  }
+
+  .page-info {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 640px) {
+    .hero-title {
+      font-size: 1.75rem;
+    }
+  }
+</style>

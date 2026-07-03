@@ -1,0 +1,211 @@
+---
+// Header.astro — 顶部导航栏
+import ThemeToggle from "./ThemeToggle.astro";
+import { SITE } from "../config";
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = "/" } = Astro.props;
+
+const navLinks = [
+  { href: "/", label: "首页" },
+  { href: "/category/tech/", label: "技术" },
+  { href: "/category/life/", label: "生活" },
+  { href: "/friends/", label: "友链" },
+  { href: "/about/", label: "关于" },
+];
+---
+
+<header class="header">
+  <div class="header-inner container">
+    <a href="/" class="logo">{SITE.title}</a>
+    <nav class="nav" id="main-nav">
+      <ul class="nav-list">
+        {
+          navLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class={currentPath === link.href ? "active" : ""}
+                aria-current={currentPath === link.href ? "page" : undefined}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <button
+        class="search-trigger"
+        id="search-trigger"
+        aria-label="搜索"
+        title="搜索 (⌘K)"
+      >
+        🔍
+      </button>
+      <ThemeToggle />
+      <button
+        class="menu-toggle"
+        id="menu-toggle"
+        aria-label="菜单"
+        aria-expanded="false"
+      >
+        <span class="menu-icon"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    backdrop-filter: blur(8px);
+    transition: background-color var(--transition);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+  }
+
+  .logo {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--color-text);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+
+  .logo:hover {
+    color: var(--color-accent);
+  }
+
+  .nav-list {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+  }
+
+  .nav-list a {
+    padding: 0.35em 0.75em;
+    border-radius: var(--radius);
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    transition: all var(--transition);
+  }
+
+  .nav-list a:hover,
+  .nav-list a.active {
+    color: var(--color-text);
+    background: var(--color-bg-secondary);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .search-trigger {
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    padding: 0.35em 0.5em;
+    font-size: 1rem;
+    line-height: 1;
+    transition: border-color var(--transition);
+  }
+
+  .search-trigger:hover {
+    border-color: var(--color-accent);
+  }
+
+  /* 汉堡菜单 (移动端) */
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    padding: 0.5em;
+  }
+
+  .menu-icon,
+  .menu-icon::before,
+  .menu-icon::after {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--color-text);
+    border-radius: 2px;
+    transition: transform var(--transition);
+  }
+
+  .menu-icon::before,
+  .menu-icon::after {
+    content: "";
+    position: absolute;
+  }
+
+  .menu-icon::before {
+    transform: translateY(-6px);
+  }
+
+  .menu-icon::after {
+    transform: translateY(6px);
+  }
+
+  @media (max-width: 640px) {
+    .nav {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      padding: 1rem;
+      display: none;
+    }
+
+    .nav.open {
+      display: block;
+    }
+
+    .nav-list {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .nav-list a {
+      display: block;
+      padding: 0.6em 0.75em;
+      font-size: 1.05rem;
+    }
+
+    .menu-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  const menuBtn = document.getElementById("menu-toggle");
+  const nav = document.getElementById("main-nav");
+  menuBtn?.addEventListener("click", () => {
+    const open = nav?.classList.toggle("open");
+    menuBtn.setAttribute("aria-expanded", String(open));
+  });
+</script>

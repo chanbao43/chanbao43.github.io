@@ -1,0 +1,63 @@
+---
+// [cat].astro — 分类页，展示该分类下所有文章
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import PostCard from "../../components/PostCard.astro";
+
+const categoryLabel: Record<string, string> = {
+  tech: "技术",
+  life: "生活",
+  essay: "随笔",
+};
+
+export async function getStaticPaths() {
+  const categories = ["tech", "life", "essay"];
+  return categories.map((cat) => ({ params: { cat } }));
+}
+
+const { cat } = Astro.params;
+const label = categoryLabel[cat] || cat;
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft && data.category === cat))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<Layout
+  title={`分类：${label}`}
+  description={`${label}分类下的所有文章`}
+>
+  <h1 class="page-title">分类：{label}</h1>
+  <p class="page-count">共 {posts.length} 篇文章</p>
+
+  {posts.length === 0 ? (
+    <p class="empty-text">暂无文章</p>
+  ) : (
+    <div class="post-list">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  )}
+</Layout>
+
+<style>
+  .page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .page-count {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .empty-text {
+    text-align: center;
+    color: var(--color-text-secondary);
+    padding: 3rem 0;
+  }
+
+  .post-list {
+    margin-top: 0.5rem;
+  }
+</style>

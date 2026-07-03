@@ -1,0 +1,52 @@
+---
+// ThemeToggle.astro — 暗色/亮色模式切换按钮
+---
+
+<button
+  id="theme-toggle"
+  class="theme-toggle"
+  aria-label="切换暗色模式"
+  title="切换暗色模式"
+>
+  <span class="icon-sun" aria-hidden="true">☀️</span>
+  <span class="icon-moon" aria-hidden="true">🌙</span>
+</button>
+
+<style>
+  .theme-toggle {
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    padding: 0.35em 0.5em;
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: border-color var(--transition);
+    display: flex;
+    align-items: center;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--color-accent);
+  }
+
+  /* 亮色模式: 显示月亮☾ (提示可切换到暗色) */
+  [data-theme="dark"] .icon-moon,
+  .icon-sun {
+    display: none;
+  }
+
+  [data-theme="dark"] .icon-moon {
+    display: inline;
+  }
+</style>
+
+<script>
+  const btn = document.getElementById("theme-toggle") as HTMLButtonElement;
+  btn?.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
+  });
+</script>

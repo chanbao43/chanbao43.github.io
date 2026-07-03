@@ -1,0 +1,42 @@
+---
+// about.astro — 关于页面
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="关于" description="关于博主和这个博客">
+  <article class="about">
+    <h1 class="about-title">关于</h1>
+    <div class="prose">
+      <!-- 关于内容直接内嵌，也可改为读取 Markdown 文件 -->
+      <h2>关于我</h2>
+      <p>你好，我是 <strong>chenbao</strong>，一个热爱技术和生活的写作者。</p>
+
+      <h3>我的写作</h3>
+      <p>这里是我记录思考和分享知识的地方。我写技术笔记，也写生活随笔。</p>
+
+      <h3>为什么叫 chenbao？</h3>
+      <p>晨报 — 清晨的第一份报纸。希望这里的每一篇文章都能像晨报一样，为你带来新鲜的视角和有价值的信息。</p>
+
+      <h3>联系我</h3>
+      <ul>
+        <li>GitHub: <a href="https://github.com/chenbao" target="_blank" rel="noopener">@chenbao</a></li>
+      </ul>
+
+      <hr />
+      <p>感谢你的来访！欢迎通过评论或邮件与我交流。</p>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .about {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .about-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+  }
+</style>

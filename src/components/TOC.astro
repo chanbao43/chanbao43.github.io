@@ -1,0 +1,70 @@
+---
+// TOC.astro — 文章内目录导航
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+// 只显示 h2 和 h3
+const visibleHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{
+  visibleHeadings.length > 0 && (
+    <nav class="toc" aria-label="文章目录">
+      <h2 class="toc-title">目录</h2>
+      <ul class="toc-list">
+        {visibleHeadings.map((h) => (
+          <li class={`toc-item depth-${h.depth}`}>
+            <a href={`#${h.slug}`}>{h.text}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+  }
+
+  .toc-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.75rem;
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .toc-item {
+    margin-bottom: 0.35em;
+    line-height: 1.5;
+  }
+
+  .toc-item.depth-3 {
+    padding-left: 1.25em;
+  }
+
+  .toc-item a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color var(--transition);
+  }
+
+  .toc-item a:hover {
+    color: var(--color-accent);
+  }
+</style>
