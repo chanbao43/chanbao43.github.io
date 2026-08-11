@@ -1,0 +1,78 @@
+# Pages CMS 配置 — https://app.pagescms.org
+# 让博客可以在网页上可视化地写文章、传图片、点保存自动发布
+
+media:
+  - name: images
+    label: 博客图片
+    input: public/images
+    output: /images
+    categories: [image]
+
+content:
+  - name: posts
+    label: 文章
+    type: collection
+    path: src/content/blog
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+      - name: date
+        label: 发布日期
+        type: date
+        required: true
+      - name: updated
+        label: 更新日期
+        type: date
+      - name: description
+        label: 摘要
+        type: string
+        required: true
+      - name: category
+        label: 分类
+        type: select
+        options:
+          values:
+            - { name: tech, label: 技术 }
+            - { name: life, label: 生活 }
+            - { name: essay, label: 随笔 }
+        required: true
+      - name: tags
+        label: 标签
+        type: string
+        list: true
+        description: 每输入一个标签后按回车确认
+      - name: image
+        label: 封面图
+        type: image
+        options:
+          media: images
+      - name: draft
+        label: 存为草稿（暂不发布）
+        type: boolean
+      - name: body
+        label: 正文
+        type: rich-text
+        options:
+          format: markdown
+          media: images
+          path: public/images
+          rename: true
+
+  - name: about
+    label: 关于页
+    type: file
+    path: src/content/about.md
+    fields:
+      - name: avatar
+        label: 头像
+        type: image
+        options:
+          media: images
+      - name: body
+        label: 内容
+        type: rich-text
+        options:
+          format: markdown
+          media: images
